@@ -15,18 +15,14 @@ pipeline {
             }
         }
 
-        stage('Test DockerHub Credential') {
+        stage('DockerHub Login Test') {
             steps {
                 withCredentials([string(
                     credentialsId: 'dockerhub-pat',
                     variable: 'DOCKER_PAT'
                 )]) {
                     powershell '''
-                        $bytes = [System.Text.Encoding]::UTF8.GetBytes($env:DOCKER_PAT)
-                        $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
-                        $hex = [BitConverter]::ToString($hash).Replace("-", "")
-                        Write-Host "Credential length: $($env:DOCKER_PAT.Length)"
-                        Write-Host "Credential SHA256: $hex"
+                        $env:DOCKER_PAT | docker login -u sakshipawar2004 --password-stdin
                     '''
                 }
             }
