@@ -15,6 +15,20 @@ pipeline {
             }
         }
 
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                    bat 'docker tag cicd-web-app:latest %DOCKER_USER%/cicd-web-app:latest'
+                    bat 'docker push %DOCKER_USER%/cicd-web-app:latest'
+                }
+            }
+        }
+
         stage('Deploy Container') {
             steps {
                 bat 'docker rm -f cicd-web-container 2>nul || exit /b 0'
