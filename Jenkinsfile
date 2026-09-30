@@ -22,7 +22,7 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
+                    powershell '$env:DOCKER_PASS | docker login -u $env:DOCKER_USER --password-stdin'
                     bat 'docker tag cicd-web-app:latest %DOCKER_USER%/cicd-web-app:latest'
                     bat 'docker push %DOCKER_USER%/cicd-web-app:latest'
                 }
