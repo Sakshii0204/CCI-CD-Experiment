@@ -15,19 +15,6 @@ pipeline {
             }
         }
 
-        stage('DockerHub Login Test') {
-            steps {
-                withCredentials([string(
-                    credentialsId: 'dockerhub-pat',
-                    variable: 'DOCKER_PAT'
-                )]) {
-                    powershell '''
-                        $env:DOCKER_PAT | docker login -u sakshipawar2004 --password-stdin
-                    '''
-                }
-            }
-        }
-
         stage('Deploy Container') {
             steps {
                 bat 'docker rm -f cicd-web-container 2>nul || exit /b 0'
