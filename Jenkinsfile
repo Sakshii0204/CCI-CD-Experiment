@@ -15,15 +15,19 @@ pipeline {
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Test DockerHub Credential') {
             steps {
                 withCredentials([string(
                     credentialsId: 'dockerhub-pat',
                     variable: 'DOCKER_PAT'
                 )]) {
-                    powershell '$env:DOCKER_PAT | docker login -u sakshipawar2004 --password-stdin'
-                    bat 'docker tag cicd-web-app:latest sakshipawar2004/cicd-web-app:latest'
-                    bat 'docker push sakshipawar2004/cicd-web-app:latest'
+                    powershell '''
+                        $bytes = [System.Text.Encoding]::UTF8.GetBytes($env:DOCKER_PAT)
+                        $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
+                        $hex = [BitConverter]::ToString($hash).Replace("-", "")
+                        Write-Host "Credential length: $($env:DOCKER_PAT.Length)"
+                        Write-Host "Credential SHA256: $hex"
+                    '''
                 }
             }
         }
